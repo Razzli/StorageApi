@@ -13,23 +13,27 @@ public class ProductsController : ControllerBase
 
     // GET: api/Product
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProduct()
     {
-        return await _context.Product.ToListAsync();
+
+        return (await _context.Product.ToListAsync()).Select(
+            Product =>
+            new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
+            .ToList();
     }
 
     // GET: api/Product/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Product>> GetProduct(int id)
+    public async Task<ActionResult<ProductDTO>> GetProduct(int id)
     {
-        var product = await _context.Product.FindAsync(id);
+        Product product = await _context.Product.FindAsync(id);
 
         if (product == null)
         {
             return NotFound();
         }
 
-        return product;
+        return new ProductDTO(product.Id, product.Name, product.Price, product.Category, product.Shelf, product.Count, product.Description);
     }
 
     // PUT: api/Product/5
