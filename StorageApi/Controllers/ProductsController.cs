@@ -58,7 +58,7 @@ public class ProductsController : ControllerBase
             Product =>
             new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
             .Where(ProductDTO => ProductDTO.Category == Category)
-            .Select(ProductDTO => new CategoryDTO(ProductDTO.Category)).ToList();
+            .Select(ProductDTO => new CategoryDTO(ProductDTO.Category)).Distinct().ToList();
     }
 
     // PUT: api/Product/5
