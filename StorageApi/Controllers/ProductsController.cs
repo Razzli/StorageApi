@@ -21,6 +21,7 @@ public class ProductsController : ControllerBase
             new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
             .ToList();
     }
+    
 
     // GET: api/Product/5
     [HttpGet("{id}")]
@@ -49,14 +50,15 @@ public class ProductsController : ControllerBase
         int value = productDTOs.Sum(ProductDTO => ProductDTO.InventoryValue);
         return [new ProductStatsDTO(count, value)];
     }
-    // GET: api/Product/?Category
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetCategory([FromQuery(Name = "category")] string Category)
+    // GET: api/Product/Category/?Category
+    [HttpGet("Category")]
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategory([FromQuery(Name = "category")] string Category)
     {
         return (await _context.Product.ToListAsync()).Select(
             Product =>
             new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
-            .Where(ProductDTO => ProductDTO.Category == Category).ToList();
+            .Where(ProductDTO => ProductDTO.Category == Category)
+            .Select(ProductDTO => new CategoryDTO(ProductDTO.Category)).ToList();
     }
 
     // PUT: api/Product/5
