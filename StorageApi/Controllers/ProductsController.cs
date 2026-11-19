@@ -36,6 +36,29 @@ public class ProductsController : ControllerBase
         return new ProductDTO(product.Id, product.Name, product.Price, product.Category, product.Shelf, product.Count, product.Description);
     }
 
+    // GET: api/Product/stats
+    [HttpGet("Stats")]
+    public async Task<IEnumerable<ProductStatsDTO>> GetStats()
+    {
+        List<Product> products = await _context.Product.ToListAsync();
+        List<ProductDTO> productDTOs = products.Select(
+            Product =>
+            new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
+            .ToList();
+        int count = productDTOs.Sum(ProductDTO => ProductDTO.Count);
+        int value = productDTOs.Sum(ProductDTO => ProductDTO.InventoryValue);
+        return [new ProductStatsDTO(count, value)];
+    }
+    // GET: api/Product/?Category
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetCategory([FromQuery(Name = "category")] string Category)
+    {
+        return (await _context.Product.ToListAsync()).Select(
+            Product =>
+            new ProductDTO(Product.Id, Product.Name, Product.Price, Product.Category, Product.Shelf, Product.Count, Product.Description))
+            .Where(ProductDTO => ProductDTO.Category == Category).ToList();
+    }
+
     // PUT: api/Product/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
